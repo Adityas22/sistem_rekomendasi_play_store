@@ -98,3 +98,16 @@ Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena
 - Setelah mengonversi data menjadi list, kita dapat membuat dictionary untuk menyimpan pasangan key-value. Dictionary ini bisa digunakan untuk menyimpan informasi penting, seperti mengaitkan setiap aplikasi dengan genre dan Rating-nya.
 
 ### 2. Collaborative Filtering
+- Dataset yang dipakai adalah `googleplaystore_user_reviews.csv`, kemudian memeriksa apakah ada nilai hilang dalam dataset tersebut.  Nilai hilang dapat memengaruhi hasil analisis kita, jadi kita perlu menanganinya dengan tepat. Sekarang disimpan pada variable `user_clean`
+  
+| Kolom                  | Missing Value |
+|-----------------------|---------------|
+| App                   | 0             |
+| Translated_Review     | 26868         |
+| Sentiment             | 26863         |
+| Sentiment_Polarity    | 26863         |
+| Sentiment_Subjectivity | 26863         |
+
+- Setelah membersihkan dataset dari nilai hilang, langkah selanjutnya adalah membagi dataset `user_clean` menjadi dua subset: 80% untuk pelatihan (training) dan 20% untuk pengujian (testing). Pembagian ini penting untuk memastikan bahwa model yang kita latih tidak terpapar pada data yang sama ketika kita mengujinya.
+
+  
