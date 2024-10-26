@@ -2,7 +2,7 @@
 ### Dibuat : Aditya Septiawan
 
 ## Project Overview
-Sistem rekomendasi aplikasi di Play Store sangat penting mengingat jumlah aplikasi yang terus meningkat dan beragamnya pilihan yang tersedia. Dengan lebih dari 3 juta aplikasi yang terdaftar di Google Play Store, pengguna sering kali merasa kewalahan dalam memilih aplikasi yang sesuai dengan kebutuhan mereka. Hal ini dapat menyebabkan pengalaman pengguna yang buruk dan mengurangi kepuasan pengguna terhadap platform tersebut. Oleh karena itu, Sistem rekomendasi yang efektif dapat membantu pengguna menemukan aplikasi yang sesuai dengan minat dan kebutuhan mereka, sehingga meningkatkan kepuasan dan loyalitas pengguna[[1]](https://dqlab.id/content-based-filtering-dalam-algoritma-data-science).<br>
+Sistem rekomendasi aplikasi di Play Store sangat penting mengingat jumlah aplikasi yang terus meningkat dan beragamnya pilihan yang tersedia. Dengan lebih dari 3 juta aplikasi yang terdaftar di Google Play Store, pengguna sering kali merasa kewalahan dalam memilih aplikasi yang sesuai dengan kebutuhan mereka. Hal ini dapat menyebabkan pengalaman pengguna yang buruk dan mengurangi kepuasan pengguna terhadap platform tersebut. Oleh karena itu,Sistem rekomendasi dapat membantu pengguna menemukan aplikasi yang relevan berdasarkan minat dan kebutuhan mereka, sehingga mengurangi kebingungan saat memilih aplikasi[[1]](https://www.bhinneka.com/blog/ai-turut-berpartisipasi-pada-rekomendasi-di-play-store/).<br>
 
 ## Business Understanding
 ### Problem Statements
@@ -58,4 +58,18 @@ Pada berkas `googleplaystore_user_reviews.csv` memuat data-data buku yang terdir
 - Sentiment_polarity :	Sentiment polarity score
 - Sentiment_subjectivity :	Sentiment subjectivity score
 
+Berikut ini adalah hasil dari visualiasi `googleplaystore.csv`.
+1. Rating
+   ![Rating](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Rating.png)
+   Visualisasi data rating ini cenderung mendapatkan penilaian yang tinggi dari pengguna, dengan puncak frekuensi pada rating 5.0. Namun, grafik juga menunjukkan adanya sebaran rating yang cukup luas, dengan frekuensi yang signifikan pada rating 4.5, 4.0, dan 3.5, mengindikasikan bahwa pengguna memberikan penilaian yang beragam.
+2. Genre
+   ![Genre](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Genres.png)
+   Visualisasi data genre ini terlihat bahwa aplikasi di platform ini didominasi oleh kategori "Tools" atau utilitas, yang menunjukkan jumlah jauh lebih besar dibandingkan genre lainnya. Namun, terdapat pula beberapa genre dengan distribusi yang cukup merata, seperti "Entertainment", "Education", dan "Medical", menandakan keberagaman preferensi pengguna. Di sisi lain, ada beberapa genre niche atau khusus, seperti "Travel & Local", "Sports", dan "Dating", yang mengindikasikan adanya segmentasi pasar yang perlu dipertimbangkan. Selain itu, terdapat peluang pengembangan di genre-genre yang saat ini kurang terwakili, seperti "News & Magazines" dan "Books & Reference".
 
+Berikut ini adalah hasil dari visualiasi `googleplaystore_user_reviews.csv`.
+1. Sentiment_polarity <br>
+   ![Sentiment_polarity](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/sentiment_polarity.png) <br>
+   Visualisasi data Sentiment_polarity menunjukkan bahwa mayoritas ulasan atau sentimen yang diberikan pengguna cenderung berada pada posisi netral, dengan puncak frekuensi yang dominan pada polaritas 0.00.
+3. Sentiment_subjectivity <br>
+   ![Sentiment_subjectivity](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Sentiment_Subjectivity.png) <br>
+   Visualisasi data Sentiment_subjectivity ini Terlihat puncak yang dominan pada nilai subjektivitas 0.8, mengindikasikan bahwa sebagian besar ulasan atau sentimen yang diberikan pengguna cenderung bersifat sangat subjektif.
