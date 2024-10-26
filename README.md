@@ -73,3 +73,28 @@ Berikut ini adalah hasil dari visualiasi `googleplaystore_user_reviews.csv`.
 3. Sentiment_subjectivity <br>
    ![Sentiment_subjectivity](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Sentiment_Subjectivity.png) <br>
    Visualisasi data Sentiment_subjectivity ini Terlihat puncak yang dominan pada nilai subjektivitas 0.8, mengindikasikan bahwa sebagian besar ulasan atau sentimen yang diberikan pengguna cenderung bersifat sangat subjektif.
+
+
+## Data Preparation
+Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena bentuk data yang dibutuhkan pada setiap model dari kedua metode tersebut berbeda.
+### 1. Content-Based Filtering
+- Untuk menyederhanakan analisis, kita akan menghapus beberapa kolom dari dataset `googleplaystore.csv` yang tidak diperlukan untuk model content-based filtering. Kolom yang akan dihapus adalah:'Reviews', 'Size', 'Price', 'Type', 'Installs', 'Content_Rating', 'Last_Updated', 'Current_Ver', 'Android_Ver'. Sekarang kita fokus pada kolom-kolom :'App', 'Category', 'Rating', 'Genres'.
+- Menggabungkan`googleplaystore.csv` dengan dataset `googleplaystore_user_reviews.csv`. Penggabungan ini akan memberikan pandangan yang lebih komprehensif tentang aplikasi, dataset yang digabungkan akan disimpan dalam variabel baru bernama all_apk_user yang berisikan 125401 rows × 8 columns.
+- Memeriksa apakah ada nilai hilang dalam dataset all_apk_user. Nilai hilang dapat memengaruhi hasil analisis kita, jadi kita perlu menanganinya dengan tepat. Sekarang disimpan pada variable `all_apk_user_cleaned`
+
+| Kolom                  | Missing Value |
+|-----------------------|---------------|
+| App                   | 0             |
+| Translated_Review     | 51298         |
+| Sentiment             | 51288         |
+| Sentiment_Polarity    | 51288         |
+| Sentiment_Subjectivity | 51288         |
+| Category              | 2739          |
+| Rating                | 2779          |
+| Genres                | 2739          |
+
+- Karena setiap aplikasi seharusnya hanya muncul sekali dalam dataset kita, kita perlu memeriksa dan menghapus entri duplikat berdasarkan kolom App. Ini memastikan bahwa dataset kita tetap bersih dan akurat. Sekarang disimpan pada variable `preparation`.
+- Setelah memastikan bahwa dataset kita bersih dari nilai hilang dan duplikat, kita dapat mengonversi kolom tertentu menjadi list. Misalnya, kita bisa mengonversi kolom Genres dan Rating menjadi list untuk memudahkan pemrosesan selanjutnya.
+- Setelah mengonversi data menjadi list, kita dapat membuat dictionary untuk menyimpan pasangan key-value. Dictionary ini bisa digunakan untuk menyimpan informasi penting, seperti mengaitkan setiap aplikasi dengan genre dan Rating-nya.
+
+### 2. Collaborative Filtering
