@@ -110,4 +110,52 @@ Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena
 
 - Setelah membersihkan dataset dari nilai hilang, langkah selanjutnya adalah membagi dataset `user_clean` menjadi dua subset: 80% untuk pelatihan (training) dan 20% untuk pengujian (testing). Pembagian ini penting untuk memastikan bahwa model yang kita latih tidak terpapar pada data yang sama ketika kita mengujinya.
 
-  
+## Modeling and Result
+Berdasarkan pernyataaan solusi sebelumnya, proses pemodelan dibagi menjadi dua metode pendekatan, yaitu metode content-based filtering dan metode collaborative filtering. Berikut adalah penjelasan dan tahapan dalam proses pemodelan dari masing-masing metode pendekatan.
+### 1. Content-Based Filtering
+Proses dimulai dengan TfidfVectorizer dari sklearn yang digunakan untuk mengekstrak fitur dari kolom Genres dengan menghitung Term Frequency-Inverse Document Frequency (TF-IDF), yang mengubah teks menjadi representasi numerik. Proses ini melibatkan fitting model pada data genre untuk menghitung nilai IDF dan kemudian mentransformasikannya menjadi matriks TF-IDF `(Dalam hal ini ukuran matriks 816 X 61)`. Matriks ini menunjukkan bobot setiap kata dalam genre untuk setiap aplikasi dan disimpan dalam sebuah DataFrame untuk analisis lebih lanjut. <br>
+````
+  array(['action', 'adventure', 'arcade', 'art', 'auto', 'beauty', 'board',
+       'books', 'brain', 'business', 'casual', 'comics', 'communication',
+       'creativity', 'dating', 'demo', 'design', 'drink', 'editors',
+       'education', 'educational', 'entertainment', 'events', 'finance',
+       'fitness', 'food', 'games', 'health', 'home', 'house', 'libraries',
+       'lifestyle', 'local', 'magazines', 'maps', 'medical', 'music',
+       'navigation', 'news', 'parenting', 'personalization',
+       'photography', 'play', 'players', 'playing', 'pretend',
+       'productivity', 'puzzle', 'racing', 'reference', 'role',
+       'shopping', 'simulation', 'social', 'sports', 'strategy', 'tools',
+       'travel', 'vehicles', 'video', 'weather'], dtype=object)
+````
+Setelah itu, cosine similarity dihitung untuk mengukur seberapa mirip dua aplikasi berdasarkan vektor TF-IDF mereka, dengan nilai berkisar antara 0 (tidak mirip) hingga 1 (sangat mirip). Matriks cosine similarity disusun dalam DataFrame, memudahkan visualisasi aplikasi yang mirip satu sama lain. Fungsi `apk_recommendations_based` kemudian diimplementasikan untuk memberikan rekomendasi berdasarkan nama aplikasi yang dimasukkan pengguna, mencari aplikasi mirip melalui nilai cosine similarity, dan menghapus aplikasi yang sama dari daftar rekomendasi. Rekomendasi ini diurutkan berdasarkan rating, dan sejumlah aplikasi ditampilkan sesuai parameter yang ditentukan `(n=10)`.<br>
+Hasil dari proses ini pengguna memasukkan nama aplikasi dan menerima rekomendasi aplikasi lainnya yang memiliki kesamaan genre dan rating yang tinggi, dapat dilihat seperti dibawah ini: 
+  ````
+Rekomendasi untuk APK '1800 Contacts - Lens Store':
+                                      App  Genres  Rating  Sentiment_Polarity  Sentiment_Subjectivity Sentiment
+                  Ada - Your Health Guide Medical     4.7            0.377083                0.683333  Positive
+           BELONG Beating Cancer Together Medical     4.7            1.000000                0.750000  Positive
+           Baritastic - Bariatric Tracker Medical     4.7            0.541667                0.916667  Positive
+                     All Mental disorders Medical     4.5           -0.277588                0.766667  Negative
+              Anatomy Learning - 3D Atlas Medical     4.5            0.362500                0.500000  Positive
+Airway Ex - Intubate. Anesthetize. Train. Medical     4.3            0.150000                0.875000  Positive
+              Banfield Pet Health Tracker Medical     4.2            0.061905                0.528571  Positive
+                  BioLife Plasma Services Medical     3.5           -0.060000                0.490000  Negative
+                          Anthem Anywhere Medical     2.7           -0.275000                0.483333  Negative
+                       Anthem BC Anywhere Medical     2.6            0.158333                0.295833  Positive
+
+  ````
+### 2. Collaborative Filtering
+Dataset yang sudah dibagi menjadi dua bagian: train set dan test set pada data preparation kemudian dibuat pivot table yang menyusun data menjadi matriks di mana baris mewakili aplikasi dan kolom mewakili nilai sentimen, memungkinkan perhitungan rata-rata nilai sentimen untuk setiap aplikasi. Model K-Nearest Neighbors (KNN) digunakan untuk menemukan aplikasi yang mirip berdasarkan nilai sentimen, dengan metrik cosine untuk mengukur kemiripan antara aplikasi. Sebuah fungsi `find_similar_items_knn` diciptakan untuk mencari aplikasi mirip, menerima nama aplikasi sebagai input, menemukan indeks aplikasi dalam matriks, dan menggunakan model KNN untuk mencari aplikasi terdekat. Pengguna diminta untuk memasukkan nama aplikasi yang diinginkan, dan rata-rata polaritas serta subjektivitas dari aplikasi tersebut dihitung dan ditampilkan.<br>
+Hasil dari proses ini pengguna memasukkan nama aplikasi,  Untuk setiap aplikasi yang direkomendasikan, rata-rata polaritas dan subjektivitas dihitung dan disimpan dalam sebuah list. Data rekomendasi kemudian diurutkan berdasarkan nilai Sentiment Polarity dari tertinggi ke terendah, dapat dilihat seperti dibawah ini: <br>
+````
+Sentiment Polarity rata-rata dari aplikasi '1800 Contacts - Lens Store': 0.3284
+Sentiment Subjectivity rata-rata dari aplikasi '1800 Contacts - Lens Store': 0.5792
+
+Rekomendasi aplikasi yang mirip dengan '1800 Contacts - Lens Store':
+                                  Aplikasi  Sentiment Polarity  Sentiment Subjectivity
+       2Date Dating App, Love and matching            0.325684                0.574011
+                            GRE Flashcards            0.319495                0.565242
+30 Day Fitness Challenge - Workout at Home            0.308258                0.543605
+                        Google My Business            0.262570                0.464485
+            Digit Save Money Automatically            0.220794                0.389645
+````
