@@ -23,3 +23,39 @@ Berdasarkan permasalahan sebelumnya, dapat diketahui bahwa akan dibuat dua buah 
 
 #### 2. Collaborative Filtering
   Collaborative Filtering (CF) menggunakan data interaksi pengguna lain yang memiliki preferensi serupa untuk merekomendasikan item[[4]](https://www.ibm.com/topics/collaborative-filtering?form=MG0AV3). Kelebihan CF adalah kemampuannya untuk merekomendasikan item yang mungkin tidak pernah dipertimbangkan oleh pengguna, karena ia memanfaatkan informasi dari komunitas pengguna secara keseluruhan. Namun, kelemahannya termasuk masalah cold-start bagi pengguna baru atau item baru, serta ketergantungan pada data interaksi yang cukup untuk menghasilkan rekomendasi yang akurat[[5]](https://developers.google.com/machine-learning/recommendation/collaborative/basics?hl=id).
+
+## Data Understanding
+Untuk membuat model yang dapat merekomendasikan plikasi pada play store kepada pengguna, tentunya membutuhkan dataset yang akan digunakan.<br>
+Informasi Dataset:
+Jenis | Keterangan
+--- | ---
+Title | Play Store Apps
+Source | [Kaggle](https://www.kaggle.com/datasets/whenamancodes/play-store-apps)
+published by | Aman Chauhan
+License | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
+Usability | 10.0
+
+Pada Dataset ini terdapat 2 berkas csv diantaranya yaitu `googleplaystore.csv`  dan `googleplaystore_user_reviews.csv`
+
+Pada berkas `googleplaystore.csv` memuat data-data buku yang terdiri dari 10.841  baris dan memiliki 13  kolom, diantaranya adalah :
+- App: 	Application name
+- Category : 	Category the app belongs to
+- Ratings : 	Overall user rating of the app (as when scraped)
+- Reviews : 	Number of user reviews for the app (as when scraped)
+- Size :	Size of the app (as when scraped)
+- Installs : 	Number of user downloads/installs for the app (as when scraped)
+- Type :	Paid or Free
+- Price :	Price of the app (as when scraped)
+- Content Rating : 	Age group the app is targeted at - Children / Mature 21+ / Adult
+- Genre : 	An app can belong to multiple genres (apart from its main category). For eg, a musical family game will belong to
+- Current Ver : 	Current version of the app available on Play Store (as when scraped)
+- Android Ver : 	Min required Android version (as when scraped)
+
+Pada berkas `googleplaystore_user_reviews.csv` memuat data-data buku yang terdiri dari 64.295   baris dan memiliki 5  kolom, diantaranya adalah :
+- App : 	Name of app
+- Translated Reviews : 	User review (Preprocessed and translated to English)
+- Sentiment : Positive/Negative/Neutral (Preprocessed)
+- Sentiment_polarity :	Sentiment polarity score
+- Sentiment_subjectivity :	Sentiment subjectivity score
+
+
