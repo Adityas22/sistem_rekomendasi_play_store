@@ -159,3 +159,8 @@ Rekomendasi aplikasi yang mirip dengan '1800 Contacts - Lens Store':
                         Google My Business            0.262570                0.464485
             Digit Save Money Automatically            0.220794                0.389645
 ````
+
+## Evaluation
+
+### 1. Content-Based Filtering
+Saya menggunakan metrik precision untuk mengukur kinerja model pada content-based filtering. precision adalah metrik yang menilai seberapa baik model dalam memberikan prediksi atau rekomendasi yang bersifat positif benar (true positive) dibandingkan positif salah (false positive). Ketika suatu data diklasifikasikan sebagai positif, metrik ini akan menilai seberapa presisi model dalam memprediksi atau memberi rekomendasi data yang diklasifikasikan positif tersebut. 
