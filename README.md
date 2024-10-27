@@ -60,18 +60,18 @@ Pada berkas `googleplaystore_user_reviews.csv` memuat data-data buku yang terdir
 
 Berikut ini adalah hasil dari visualiasi `googleplaystore.csv`.
 1. Rating
-   ![Rating](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Rating.png)
+   ![Rating](https://github.com/Adityas22/sistem_rekomendasi_play_store/raw/main/image/Rating.png)
    Visualisasi data rating ini cenderung mendapatkan penilaian yang tinggi dari pengguna, dengan puncak frekuensi pada rating 5.0. Namun, grafik juga menunjukkan adanya sebaran rating yang cukup luas, dengan frekuensi yang signifikan pada rating 4.5, 4.0, dan 3.5, mengindikasikan bahwa pengguna memberikan penilaian yang beragam.
 2. Genre
-   ![Genre](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Genres.png)
+   ![Genre](https://github.com/Adityas22/sistem_rekomendasi_play_store/raw/main/image/Genres.png)
    Visualisasi data genre ini terlihat bahwa aplikasi di platform ini didominasi oleh kategori "Tools" atau utilitas, yang menunjukkan jumlah jauh lebih besar dibandingkan genre lainnya. Namun, terdapat pula beberapa genre dengan distribusi yang cukup merata, seperti "Entertainment", "Education", dan "Medical", menandakan keberagaman preferensi pengguna. Di sisi lain, ada beberapa genre niche atau khusus, seperti "Travel & Local", "Sports", dan "Dating", yang mengindikasikan adanya segmentasi pasar yang perlu dipertimbangkan. Selain itu, terdapat peluang pengembangan di genre-genre yang saat ini kurang terwakili, seperti "News & Magazines" dan "Books & Reference".
 
 Berikut ini adalah hasil dari visualiasi `googleplaystore_user_reviews.csv`.
 1. Sentiment_polarity <br>
-   ![Sentiment_polarity](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/sentiment_polarity.png) <br>
+   ![Sentiment_polarity](https://github.com/Adityas22/sistem_rekomendasi_play_store/raw/main/image/sentiment_polarity.png) <br>
    Visualisasi data Sentiment_polarity menunjukkan bahwa mayoritas ulasan atau sentimen yang diberikan pengguna cenderung berada pada posisi netral, dengan puncak frekuensi yang dominan pada polaritas 0.00.
 3. Sentiment_subjectivity <br>
-   ![Sentiment_subjectivity](https://github.com/Adityas22/sistem_rekomendasi_play_store/blob/main/image/Sentiment_Subjectivity.png) <br>
+   ![Sentiment_subjectivity](https://github.com/Adityas22/sistem_rekomendasi_play_store/raw/main/image/Sentiment_Subjectivity.png) <br>
    Visualisasi data Sentiment_subjectivity ini Terlihat puncak yang dominan pada nilai subjektivitas 0.8, mengindikasikan bahwa sebagian besar ulasan atau sentimen yang diberikan pengguna cenderung bersifat sangat subjektif.
 
 
