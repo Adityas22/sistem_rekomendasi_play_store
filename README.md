@@ -35,9 +35,9 @@ published by | Aman Chauhan
 License | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
 Usability | 10.0
 
-Pada Dataset ini terdapat 2 berkas csv diantaranya yaitu `googleplaystore.csv`  dan `googleplaystore_user_reviews.csv`
+Pada Dataset ini terdapat 2 berkas csv diantaranya yaitu `googleplaystore.csv` yang memiliki jumlah data 9660 unique values  dan `googleplaystore_user_reviews.csv` yang memiliki jumlah data 1074 unique values
 
-Pada berkas `googleplaystore.csv` memuat data-data buku yang terdiri dari 10.841  baris dan memiliki 13  kolom, diantaranya adalah :
+Pada berkas `googleplaystore.csv` memuat data-data aplikasi yang terdiri dari 10.841 baris dan memiliki 13  kolom, diantaranya adalah :
 - App: 	Application name
 - Category : 	Category the app belongs to
 - Ratings : 	Overall user rating of the app (as when scraped)
