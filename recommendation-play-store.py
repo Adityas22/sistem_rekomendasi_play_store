@@ -10,13 +10,15 @@
 # ## Data Understanding
 # 
 
+# memahami cakupan dan jumlah data unik yang ada dalam kedua dataset
+
 # In[1]:
 
 
 import pandas as pd
 
 user = pd.read_csv('dataset-play-store/googleplaystore_user_reviews.csv')
-apk = pd.read_csv('dataset-play-store\googleplaystore.csv')
+apk = pd.read_csv('dataset-play-store/googleplaystore.csv')
  
 print('Jumlah data pada play store: ', len(apk.App.unique()))
 print('Jumlah data pada user review: ', len(user.App.unique()))
@@ -25,7 +27,7 @@ print('Jumlah data pada user review: ', len(user.App.unique()))
 
 # ## Univariate Exploratory Data Analysis
 
-# User Variabel
+# menampilkan ringkasan informasi dari dataframe user
 
 # In[2]:
 
@@ -33,28 +35,24 @@ print('Jumlah data pada user review: ', len(user.App.unique()))
 user.info()
 
 
-# melihat data
+# menampilkan statistik deskriptif pada kolom numerik dari user
 
 # In[3]:
-
-
-print('Banyak data: ', len(user.App.unique()))
-print('Translated_Review: ', user.Translated_Review.unique())
-print('Sentiment: ', user.Sentiment.unique())
-print('Sentiment_Polarity: ', user.Sentiment_Polarity.unique())
-print('Sentiment_Subjectivity: ', user.Sentiment_Subjectivity.unique())
-
-
-# cek nilai
-
-# In[4]:
 
 
 # Tampilkan deskripsi 
 user.describe()
 
 
-# visual Sentiment_Polarity
+# menghitung jumlah nilai kosong (null) di setiap kolom pada user
+
+# In[4]:
+
+
+user.isnull().sum()
+
+
+# menampilkan distribusi Sentiment Polarity pada user
 
 # In[5]:
 
@@ -77,7 +75,7 @@ plt.ylabel('Frequency')
 plt.show()
 
 
-# visual Sentiment_Subjectivity
+# menampilkan distribusi Sentiment Subjectivity pada user
 
 # In[6]:
 
@@ -94,28 +92,23 @@ plt.tight_layout()
 plt.show()
 
 
-# Aplikasi play store Variabel
+# memberikan ringkasan informasi pada apk
 
 # In[7]:
 
 
-apk.columns = apk.columns.str.replace(' ', '_')
 apk.info()
 
 
-# melihat data
+# mengubah semua spasi di nama kolom menjadi underscore _
 
 # In[8]:
 
 
-print('Banyak data: ', len(apk.App.unique()))
-print('Category: ', apk.Category.unique())
-print('Content Rating: ', apk.Content_Rating  .unique())
-print('Genres: ', apk.Genres.unique())
-print('Rating: ', apk.Rating.unique())
+apk.columns = apk.columns.str.replace(' ', '_')
 
 
-# cek nilai
+# menampilkan statistik deskriptif pada kolom numerik dari user
 
 # In[9]:
 
@@ -123,26 +116,9 @@ print('Rating: ', apk.Rating.unique())
 apk.describe()
 
 
-# visual category
+# menampilkan distribusi Rating pada apk
 
 # In[10]:
-
-
-plt.figure(figsize=(18, 14))
-plt.subplot(3, 1, 1)
-category_counts = apk['Category'].value_counts()
-sns.barplot(x=category_counts.index, y=category_counts.values, palette="viridis")
-plt.title('Distribution of Categories')
-plt.xlabel('Category')
-plt.ylabel('Count')
-plt.xticks(rotation=90)
-
-plt.show()
-
-
-# visual rating
-
-# In[11]:
 
 
 plt.figure(figsize=(18, 14))
@@ -156,9 +132,9 @@ plt.ylabel('Frequency')
 plt.show()
 
 
-# visual genre
+# menampilkan distribusi Genres pada user
 
-# In[12]:
+# In[11]:
 
 
 plt.figure(figsize=(18, 14))
@@ -175,62 +151,54 @@ plt.tight_layout()
 plt.show()
 
 
-# ## Data Preprocessing
+# ## Data Preparation untuk CBF
 
-# menghapus kolom review, size, type, price, Installs, content_rating, Last_Updated, Current_Ver, Android_Ver  pada aplikasi karena tidak terlalu digunakan. berfokus pada category, rating, dan genre
+# Menghapus kolom tertentu untuk menyederhanakan dan hanya dengan kolom-kolom yang relevan bagi analisis
 
-# In[13]:
+# In[12]:
 
 
 apk = apk.drop(columns=['Reviews', 'Size', 'Price', 'Type', 'Installs', 'Content_Rating', 'Last_Updated', 'Current_Ver', 'Android_Ver'], axis=1)
 apk
 
 
-# menggabungkan data games dan recommendation
+# menggabungkan dua DataFrame, yaitu user dan apk  untuk mengaitkan informasi ulasan pengguna dengan data aplikasi
 
-# In[14]:
+# In[13]:
 
 
 all_apk_user = pd.merge(user,  apk, on='App', how='left')
 all_apk_user
 
 
-# ## Data Preparation
+# menghitung jumlah nilai kosong (null) pada all_apk_user dimana pada dataset yang sudah digabung sebelumnya
 
-# mengecek missing value
-
-# In[15]:
+# In[14]:
 
 
 all_apk_user.isnull().sum()
 
 
-#  Menghapus Baris dengan Nilai Null
+# menghapus semua baris yang memiliki nilai kosong (null) 
 
-# In[16]:
+# In[15]:
 
 
 all_apk_user_cleaned = all_apk_user.dropna()
 
 
-# In[17]:
+# menghapus duplikasi berdasarkan kolom App untuk memastikan bahwa analisis berikutnya tidak akan terpengaruh oleh adanya aplikasi yang sama lebih dari sekali,
 
-
-all_apk_user_cleaned.isnull().sum()
-
-
-# menghapus duplikat
-
-# In[18]:
+# In[16]:
 
 
 preparation = all_apk_user_cleaned.drop_duplicates('App')
 preparation
 
 
-# konversi data series menjadi list
+#  mengonversi kolom dari DataFrame preparation menjadi list kemudian mencetak panjang (len) masing-masing list tersebut untuk verifikasi
 
-# In[19]:
+# In[17]:
 
 
 # Mengonversi kolom 'App' menjadi list
@@ -268,9 +236,9 @@ print(len(rating_list))
 print(len(genres_list))
 
 
-#  membuat dictionary untuk menentukan pasangan key-value pada data
+# membuat DataFrame baru dari kolom-kolom yang telah dikonversi menjadi list sebelumnya. menghasilkan struktur data yang terorganisir dengan baik, di mana setiap kolom mewakili informasi yang relevan tentang aplikasi dan ulasan pengguna
 
-# In[20]:
+# In[18]:
 
 
 # Membuat dictionary baru dari kolom yang digunakan
@@ -288,11 +256,9 @@ apk_user_dict = pd.DataFrame({
 apk_user_dict
 
 
-# ## Model Development dengan Content Based Filtering
+# menghitung dan memetakan fitur dari kolom Genres dalam DataFrame apk_user_dict menggunakan metode TF-IDF. TF-IDF membantu dalam mengidentifikasi seberapa penting suatu kata dalam koleksi dokumen. 
 
-# TF-IDF Vectorizer akan digunakan pada sistem rekomendasi untuk menemukan representasi fitur penting dari setiap kolom game. Kita akan menggunakan fungsi tfidfvectorizer() dari library sklearn
-
-# In[21]:
+# In[19]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -307,9 +273,11 @@ tfidf_vectorizer.fit(apk_user_dict['Genres'])
 tfidf_vectorizer.get_feature_names_out() 
 
 
-#  lakukan fit dan transformasi ke dalam bentuk matriks
+# ## Model Development dengan Content Based Filtering
 
-# In[22]:
+# melakukan transformasi data kolom Genres menjadi matriks TF-IDF dan memeriksa ukuran matriks tersebut untuk memahami dimensi dari data yang telah diproses, serta untuk memastikan bahwa transformasi berhasil dan matriks memiliki ukuran yang sesuai untuk analisis atau pemodelan selanjutnya.
+
+# In[20]:
 
 
 # Melakukan fit lalu ditransformasikan ke bentuk matrix
@@ -319,9 +287,9 @@ tfidf_matrix = tfidf_vectorizer.fit_transform(apk_user_dict['Genres'])
 tfidf_matrix.shape
 
 
-# Untuk menghasilkan vektor tf-idf dalam bentuk matriks
+# mengubah matriks TF-IDF yang awalnya dalam bentuk sparse menjadi bentuk dense untuk melakukan analisis lebih lanjut atau memvisualisasikan data
 
-# In[23]:
+# In[21]:
 
 
 # Mengubah vektor tf-idf dalam bentuk matriks dengan fungsi todense()
@@ -329,9 +297,9 @@ tfidf_matrix_dense = tfidf_matrix.todense()
 tfidf_matrix_dense
 
 
-# lihat matriks tf-idf
+# membuat DataFrame dari matriks TF-IDF yang telah diubah menjadi bentuk dense, sehingga memungkinkan untuk melihat nilai-nilai TF-IDF dengan lebih mudah, memvisualisasikan dan menganalisis data TF-IDF dengan cara yang lebih terstruktur.
 
-# In[24]:
+# In[22]:
 
 
 # Membuat dataframe untuk melihat tf-idf matrix
@@ -347,9 +315,11 @@ tfidf_df = pd.DataFrame(
 tfidf_df.sample(22, axis=1).sample(10, axis=0)
 
 
-# Cosine Similarity (menghitung derajat kesamaan), dimana data dikurangin karena terlalu besar (ambil 15000 acak)
+# menghitung cosine similarity antara dokumen-dokumen dalam matriks TF-IDF yang telah dibuat.
 
-# In[25]:
+# Cosine similarity adalah metrik yang umum digunakan dalam analisis teks untuk mengukur seberapa mirip dua teks berdasarkan sudut antara vektor-vektor mereka dalam ruang fitur. 
+
+# In[23]:
 
 
 # Menghitung cosine similarity pada matrix tf-idf
@@ -359,7 +329,9 @@ cosine_sim = cosine_similarity(tfidf_matrix)
 cosine_sim
 
 
-# In[26]:
+# menghitung ulang matriks TF-IDF dan cosine similarity untuk menganalisis kemiripan dokumen dalam konteks subset tertentu dari data
+
+# In[24]:
 
 
 # Menghitung ulang TF-IDF untuk subset data
@@ -372,13 +344,9 @@ cosine_sim_subset = cosine_similarity(tfidf_matrix_subset)
 print('Cosine Similarity Matrix Shape:', cosine_sim_subset.shape)
 
 
-# In[ ]:
+# membuat DataFrame dari matriks cosine similarity yang telah dihitung dan memvisualisasikan hasilnya dengan cara yang lebih terstruktur. 
 
-
-
-
-
-# In[27]:
+# In[25]:
 
 
 # Membuat dataframe dari variabel cosine_sim_subset dengan baris dan kolom dari subset App
@@ -393,12 +361,12 @@ print('Shape:', cosine_sim_df.shape)
 cosine_sim_df.sample(7, axis=1).sample(10, axis=0)
 
 
-# mendapatkan rekomendasi
+# memberikan rekomendasi aplikasi berdasarkan kemiripan cosine antara aplikasi yang diberikan.
 
-# In[28]:
+# In[26]:
 
 
-def apk_recommendations_based(name_apk, similarity_data=cosine_sim_df, items=apk_user_dict[['App', 'Genres', 'Rating', 'Sentiment_Subjectivity']], n=10):
+def apk_recommendations_based(name_apk, similarity_data=cosine_sim_df, items=apk_user_dict[['App', 'Genres', 'Rating', 'Sentiment_Polarity', 'Sentiment_Subjectivity', 'Sentiment']], n=10):
     # Mencari index game yang mirip berdasarkan cosine similarity
     similar_apk = similarity_data[name_apk].nlargest(n + 1).index
     
@@ -414,131 +382,82 @@ def apk_recommendations_based(name_apk, similarity_data=cosine_sim_df, items=apk
     return recommendations.head(n)
 
 
-# Menguji Fungsi Rekomendasi
+# mengambil input dari pengguna dan kemudian menggunakan fungsi apk_recommendations_based untuk memberikan rekomendasi aplikasi berdasarkan input tersebut.
+
+# In[28]:
+
+
+from tabulate import tabulate
+
+# Mengambil input dari user
+name_apk_input = input("Masukkan nama APK yang ingin direkomendasikan: ")
+recommendations = apk_recommendations_based(name_apk_input)
+
+# Menampilkan hasil dengan input di bagian atas
+print(f"\nRekomendasi untuk APK '{name_apk_input}':")
+print(tabulate(recommendations, headers='keys', tablefmt='github', showindex=False))
+
+
+# menghitung dan menampilkan nilai precision dari rekomendasi aplikasi berdasarkan sentimen positif
 
 # In[29]:
 
 
-# Menampilkan 10 aplikasi secara acak di kolom 'App' untuk dicoba pada pengujiabn
-print(preparation['App'].sample(10))
+# Mendefinisikan aplikasi relevan (ground truth) sebagai aplikasi dengan Sentiment positif
+relevant_apks = set(preparation['App'])
 
+# Mendapatkan nama aplikasi yang direkomendasikan dalam bentuk set
+recommended_apks = set(recommendations['App'])
 
-# In[30]:
+# Menghitung Precision dan Recall
+true_positives = len(recommended_apks.intersection(relevant_apks))
+precision = true_positives / len(recommended_apks) if recommended_apks else 0
 
-
-apk_recommendations_based('Happify')
-
+print(f"\nPrecision: {precision:.2f}")
 
 
 # ## Model Development dengan Collaborative Filtering
 
-# In[31]:
+# ### Data Preparation (dataset yang dipakai hanya user review)
+
+# menampilkan ringkasan informasi  dari user
+
+# In[30]:
 
 
 user.info()
 
 
-# In[32]:
+# menghitung jumlah nilai kosong (null) di setiap kolom pada user
 
-
-user
-
-
-# In[33]:
+# In[31]:
 
 
 user.isnull().sum()
 
 
-# In[34]:
+# menghapus semua baris dalam yang memiliki nilai NaN
+
+# In[32]:
 
 
 user_clean = user.dropna()
 
 
-# In[35]:
-
-
-user_clean.isnull().sum()
-
-
-# In[36]:
+# In[33]:
 
 
 user_clean
 
 
-# Buat matriks baru yang hanya berisi data numerik
+#  membagi dataset ulasan aplikasi yang telah dibersihkan menjadi train set dan test set (80:20), Mengubah train_data menjadi tabel pivot kemudian kolom yang akan dihitung adalah Sentiment_Polarity dan Sentiment_Subjectivity.
 
-# In[37]:
-
-
-# Membuat pivot table tanpa kolom string
-item_matrix = user_clean.pivot_table(index='App', values=['Sentiment_Polarity', 'Sentiment_Subjectivity'], aggfunc='mean')
-
-
-# In[38]:
-
-
-item_matrix
-
-
-# Menghitung cosine similarity
-
-# In[39]:
-
-
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.preprocessing import StandardScaler
-
-# Menghitung cosine similarity antar aplikasi berdasarkan data numerik
-scaler = StandardScaler()
-item_matrix_scaled = scaler.fit_transform(item_matrix)
-
-
-# In[40]:
-
-
-item_matrix_scaled
-
-
-# In[41]:
-
-
-# Hitung cosine similarity berdasarkan data yang sudah di-scaling
-item_similarity = cosine_similarity(item_matrix_scaled)
-item_similarity_df = pd.DataFrame(item_similarity, index=item_matrix.index, columns=item_matrix.index)
-
-
-# In[42]:
-
-
-item_similarity_df
-
-
-# Visualisasi Matriks Kesamaan
-
-# In[43]:
-
-
-random_apps = item_similarity_df.sample(n=20, random_state=2)  # Set random_state untuk reproducibility
-filtered_similarity_df = item_similarity_df.loc[random_apps.index, random_apps.index]
-
-# Visualisasi matriks kesamaan dengan heatmap
-plt.figure(figsize=(20, 10))
-sns.heatmap(filtered_similarity_df, cmap='coolwarm', annot=True, fmt=".2f")
-plt.title('Cosine Similarity antara 20 Aplikasi Random')
-plt.xlabel('Aplikasi')
-plt.ylabel('Aplikasi')
-plt.show()
-
-
-# membagi dataset
-
-# In[44]:
+# In[34]:
 
 
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import NearestNeighbors
+import numpy as np
 
 # Pisahkan dataset menjadi train dan test set
 train_data, test_data = train_test_split(user_clean, test_size=0.2, random_state=42)
@@ -546,80 +465,55 @@ train_data, test_data = train_test_split(user_clean, test_size=0.2, random_state
 # Buat pivot table dari train_data untuk membentuk matriks item similarity berdasarkan Sentiment_Polarity 
 item_matrix_train = train_data.pivot_table(index='App', values=['Sentiment_Polarity', 'Sentiment_Subjectivity'], aggfunc='mean')
 
-# Menghitung cosine similarity antar aplikasi pada training set
-from sklearn.metrics.pairwise import cosine_similarity
-
-item_similarity_train = cosine_similarity(item_matrix_train)
-item_similarity_df_train = pd.DataFrame(item_similarity_train, index=item_matrix_train.index, columns=item_matrix_train.index)
 
 
-# In[45]:
+# ### Modeling CF
+
+# Membangun model K-Nearest Neighbors (KNN) untuk menemukan aplikasi yang mirip
+
+# In[35]:
+
+
+# Menggunakan K-Nearest Neighbors untuk mencari kemiripan antar aplikasi
+knn = NearestNeighbors(metric='cosine', algorithm='brute')
+knn.fit(item_matrix_train)
+
+
+# memberikan rekomendasi aplikasi yang mirip berdasarkan model K-Nearest Neighbors dengan jumlah yang direkomendasikan yaitu 5
+
+# In[36]:
 
 
 # Fungsi untuk mencari aplikasi mirip
-def find_similar_items(app_name, item_similarity_df, n=5):
-    if app_name in item_similarity_df.index:
-        similar_scores = item_similarity_df[app_name].sort_values(ascending=False)
-        return similar_scores.head(n)  # Mengembalikan n aplikasi paling mirip
+def find_similar_items_knn(app_name, item_matrix_train, model, n=5):
+    if app_name in item_matrix_train.index:
+        # Mendapatkan indeks aplikasi yang diberikan
+        idx = item_matrix_train.index.get_loc(app_name)
+        distances, indices = model.kneighbors(item_matrix_train.iloc[idx, :].values.reshape(1, -1), n_neighbors=n+1)
+        
+        # Ambil hasil dalam bentuk DataFrame untuk aplikasi yang mirip
+        similar_apps = pd.DataFrame({
+            'Aplikasi': item_matrix_train.index[indices.flatten()],
+            'Jarak': distances.flatten()
+        }).sort_values(by='Jarak').iloc[1:]  # Hilangkan aplikasi itu sendiri dari hasil
+        
+        return similar_apps
     else:
-        raise ValueError(f"Aplikasi '{app_name}' tidak ditemukan.")
+        raise ValueError(f"Aplikasi '{app_name}' tidak ditemukan dalam data.")
 
 
-#  Mengukur MSE dan MSA
+# menganalisis sentimen aplikasi berdasarkan input dari pengguna
 
-# In[46]:
+# List rekomendasi diurutkan berdasarkan Sentiment_Polarity dari yang tertinggi ke terendah
 
-
-# Ambil nilai sebenarnya dari test set (baik Sentiment_Polarity maupun Sentiment_Subjectivity)
-y_true_polarity = test_data['Sentiment_Polarity'].values
-y_true_subjectivity = test_data['Sentiment_Subjectivity'].values
-
-# Prediksi polarity dan subjectivity berdasarkan aplikasi yang mirip
-y_pred_polarity = []
-y_pred_subjectivity = []
-for app in test_data['App']:
-    try:
-        # Cari aplikasi yang mirip
-        similar_items = find_similar_items(app, item_similarity_df_train)
-        
-        # Prediksi Sentiment_Polarity dan Sentiment_Subjectivity berdasarkan aplikasi yang mirip
-        pred_polarity = train_data[train_data['App'].isin(similar_items.index)]['Sentiment_Polarity'].mean()
-        pred_subjectivity = train_data[train_data['App'].isin(similar_items.index)]['Sentiment_Subjectivity'].mean()
-        
-        y_pred_polarity.append(pred_polarity)
-        y_pred_subjectivity.append(pred_subjectivity)
-    except ValueError:
-        # Jika tidak ada aplikasi mirip, gunakan default (misalnya 0)
-        y_pred_polarity.append(0)
-        y_pred_subjectivity.append(0)
-
-# Menghitung Mean Squared Error (MSE) dan Mean Absolute Error (MAE) untuk Sentiment_Polarity
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-
-mse_polarity = mean_squared_error(y_true_polarity, y_pred_polarity)
-mae_polarity = mean_absolute_error(y_true_polarity, y_pred_polarity)
-
-# Menghitung MSE dan MAE untuk Sentiment_Subjectivity
-mse_subjectivity = mean_squared_error(y_true_subjectivity, y_pred_subjectivity)
-mae_subjectivity = mean_absolute_error(y_true_subjectivity, y_pred_subjectivity)
-
-print(f"Mean Squared Error (Polarity): {mse_polarity}")
-print(f"Mean Absolute Error (Polarity): {mae_polarity}")
-
-print(f"Mean Squared Error (Subjectivity): {mse_subjectivity}")
-print(f"Mean Absolute Error (Subjectivity): {mae_subjectivity}")
+# In[44]:
 
 
-# In[47]:
-
-
-import pandas as pd
-
-# Cari rekomendasi aplikasi berdasarkan input
+# Input aplikasi dari pengguna
 app_input = input("Masukkan nama aplikasi: ")
 
 try:
-    # Ambil rata-rata Sentiment Polarity dan Subjectivity dari aplikasi input user
+    # Menampilkan Sentiment Polarity dan Subjectivity rata-rata dari aplikasi yang dimasukkan pengguna
     user_app_polarity = train_data[train_data['App'] == app_input]['Sentiment_Polarity'].mean()
     user_app_subjectivity = train_data[train_data['App'] == app_input]['Sentiment_Subjectivity'].mean()
     
@@ -630,147 +524,77 @@ try:
     print(f"\nSentiment Polarity rata-rata dari aplikasi '{app_input}': {user_app_polarity:.4f}")
     print(f"Sentiment Subjectivity rata-rata dari aplikasi '{app_input}': {user_app_subjectivity:.4f}")
     
-    # Cari aplikasi yang mirip berdasarkan input
-    recommendations = find_similar_items(app_input, item_similarity_df_train)
+    # Cari aplikasi yang mirip dengan KNN
+    recommendations = find_similar_items_knn(app_input, item_matrix_train, knn)
     
     # List untuk menyimpan data aplikasi dan rata-rata sentimen
     app_data = []
     
     print(f"\nRekomendasi aplikasi yang mirip dengan '{app_input}':")
     
-    for app, score in recommendations.items():
-        # Ambil rata-rata Sentiment Polarity dan Subjectivity dari aplikasi yang direkomendasikan
-        avg_polarity = train_data[train_data['App'] == app]['Sentiment_Polarity'].mean()
-        avg_subjectivity = train_data[train_data['App'] == app]['Sentiment_Subjectivity'].mean()
+    for _, row in recommendations.iterrows():
+        app_name = row['Aplikasi']
+        avg_polarity = train_data[train_data['App'] == app_name]['Sentiment_Polarity'].mean()
+        avg_subjectivity = train_data[train_data['App'] == app_name]['Sentiment_Subjectivity'].mean()
         
         # Tambahkan data aplikasi ke dalam list
-        app_data.append([app, avg_polarity, avg_subjectivity])
+        app_data.append([app_name, avg_polarity, avg_subjectivity])
     
     # Urutkan aplikasi berdasarkan Sentiment Polarity dari tertinggi ke terendah
     app_data_sorted = sorted(app_data, key=lambda x: x[1], reverse=True)
 
-    # Konversi hasil ke dalam dataframe pandas
-    df_recommendations = pd.DataFrame(app_data_sorted, columns=['Aplikasi', 'Sentiment Polarity', 'Sentiment Subjectivity'])
+   # Menghitung panjang maksimum nama aplikasi
+    max_app_length = max(len(row['Aplikasi']) for _, row in recommendations.iterrows())
+    # Tambahkan padding jika perlu
+    max_app_length = max(max_app_length, 27)  # Set minimal lebar 27 jika lebih kecil
 
-    # Tampilkan hasil dalam bentuk tabel
-    print(df_recommendations.to_string(index=False))
+    # Menampilkan hasil dalam format tabel Markdown
+    print("\n| Aplikasi" + " " * (max_app_length - 8) + "| Sentiment Polarity | Sentiment Subjectivity |")
+    print("|" + "-" * (max_app_length + 2) + "|-------------------|-----------------------|")
+    for app_name, polarity, subjectivity in app_data_sorted:
+        print(f"| {app_name:<{max_app_length}} | {polarity:>17.4f} | {subjectivity:>21.4f} |")
         
 except ValueError as e:
     print(e)
 
 
-# ## Hybrid (gabungan)
+# memprediksi nilai sentimen rata-rata (polarity dan subjectivity) dari aplikasi menggunakan algoritma K-Nearest Neighbors (KNN) dan kemudian menghitung error metrik dengan Root Mean Squared Error (RMSE) 
 
-# Content-Based Filtering
-
-# In[48]:
+# In[38]:
 
 
-cosine_sim_df = pd.DataFrame(cosine_sim_subset, 
-                             index=apk_user_dict['App'], 
-                             columns=apk_user_dict['App'])
+from sklearn.metrics import mean_squared_error
 
-
-# Collaborative Filtering
-
-# In[49]:
-
-
-item_similarity_df_train = pd.DataFrame(item_similarity_train, index=item_matrix_train.index, columns=item_matrix_train.index)
-
-
-# Fungsi Prediksi Menggunakan Weighted Sum dengan Sentiment_Polarity
-
-# In[51]:
-
-
-def predict_polarity(app_name, user_ratings, similarity_matrix, n_neighbors=5):
-    # Cari aplikasi yang mirip berdasarkan similarity matrix
-    similar_apps = similarity_matrix[app_name].nlargest(n_neighbors + 1).index.drop(app_name, errors='ignore')
-    
-    # Ambil similarity scores dan Sentiment_Polarity dari aplikasi yang mirip
-    sim_scores = similarity_matrix[app_name][similar_apps]
-    app_polarity = user_ratings[similar_apps]
-    
-    # Menghitung weighted sum untuk prediksi Sentiment_Polarity
-    weighted_sum = (sim_scores * app_polarity).sum()
-    sim_sum = sim_scores.sum()
-    
-    # Jika sim_sum bukan nol, hitung rata-rata berbobot
-    if sim_sum != 0:
-        return weighted_sum / sim_sum
+# Fungsi untuk menemukan aplikasi mirip dan memprediksi sentimen rata-rata
+def predict_sentiment_knn(app_name, item_matrix_train, model, train_data, n=5):
+    if app_name in item_matrix_train.index:
+        # Cari n aplikasi mirip
+        idx = item_matrix_train.index.get_loc(app_name)
+        distances, indices = model.kneighbors(item_matrix_train.iloc[idx, :].values.reshape(1, -1), n_neighbors=n+1)
+        
+        # Ambil aplikasi yang mirip dan hitung rata-rata polarity dan subjectivity
+        similar_apps = item_matrix_train.index[indices.flatten()[1:]]  # Hilangkan aplikasi itu sendiri dari hasil
+        pred_polarity = train_data[train_data['App'].isin(similar_apps)]['Sentiment_Polarity'].mean()
+        pred_subjectivity = train_data[train_data['App'].isin(similar_apps)]['Sentiment_Subjectivity'].mean()
+        
+        return pred_polarity, pred_subjectivity
     else:
-        return 0  # Jika tidak ada similarity, prediksi default
+        # Jika tidak ada aplikasi yang mirip, gunakan default (misalnya 0)
+        return 0, 0
 
+# Menghitung nilai sebenarnya dari test set
+y_true_polarity = test_data['Sentiment_Polarity'].values
 
-# Memprediksi Sentiment_Polarity untuk Item di Test Set
-
-# In[52]:
-
-
-# Inisialisasi daftar untuk menyimpan prediksi Sentiment_Polarity
+# Prediksi polarity dan subjectivity pada test set
 y_pred_polarity = []
 
-# Prediksi Sentiment_Polarity untuk setiap aplikasi dalam test set
 for app in test_data['App']:
-    try:
-        # Prediksi Sentiment_Polarity menggunakan weighted sum
-        pred_polarity = predict_polarity(app, train_data.pivot_table(index='App', values='Sentiment_Polarity'), item_similarity_df_train)
-        y_pred_polarity.append(pred_polarity)
-    except KeyError:
-        # Jika aplikasi tidak ada dalam training set, beri prediksi default (misal 0)
-        y_pred_polarity.append(0)
+    pred_polarity, pred_subjectivity = predict_sentiment_knn(app, item_matrix_train, knn, train_data)
+    y_pred_polarity.append(pred_polarity)
 
-# Evaluasi hasil prediksi
-mse_polarity = mean_squared_error(test_data['Sentiment_Polarity'], y_pred_polarity)
-mae_polarity = mean_absolute_error(test_data['Sentiment_Polarity'], y_pred_polarity)
-
-print(f"Mean Squared Error (Sentiment_Polarity): {mse_polarity}")
-print(f"Mean Absolute Error (Sentiment_Polarity): {mae_polarity}")
+# Menghitung Root Mean Squared Error (RMSE) dan Mean Absolute Error (MAE) untuk Sentiment_Polarity
+rmse_polarity = mean_squared_error(y_true_polarity, y_pred_polarity, squared=False)
 
 
-# In[65]:
-
-
-def hybrid_recommendations(app_name, content_sim_matrix, collab_sim_matrix, apk_user_dict, train_data, weight_content=0.5, weight_collab=0.5, n=10):
-    # 1. Content-based Recommendations (based on 'genre')
-    genre = apk_user_dict.loc[apk_user_dict['App'] == app_name, 'Category'].values[0]
-    content_similar_apps = apk_user_dict[apk_user_dict['Category'] == genre]['App'].head(n+1).values
-    content_similar_apps = [app for app in content_similar_apps if app != app_name]  # Exclude current app
-
-    # 2. Collaborative-based Recommendations (based on 'Sentiment_Polarity')
-    collab_similar_apps = collab_sim_matrix[app_name].nlargest(n + 1).index.drop(app_name, errors='ignore')
-
-    # 3. Combine both recommendations
-    combined_similar_apps = set(content_similar_apps).union(set(collab_similar_apps))
-
-    # 4. Assign weights and calculate final scores
-    final_scores = {}
-    for app in combined_similar_apps:
-        content_score = 1 if app in content_similar_apps else 0  # Genre match as binary score
-        collab_score = collab_sim_matrix[app_name].get(app, 0)  # Sentiment polarity-based score
-
-        # Combine with weights
-        final_score = (weight_content * content_score) + (weight_collab * collab_score)
-        final_scores[app] = final_score
-
-    # 5. Sort results based on combined score
-    sorted_apps = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)[:n]
-
-    # 6. Fetch app details from apk_user_dict, excluding 'Translated_Review', 'Sentiment', and 'Category' columns
-    recommended_apps = [app[0] for app in sorted_apps]
-    recommendations = apk_user_dict[apk_user_dict['App'].isin(recommended_apps)].drop(columns=['Translated_Review', 'Sentiment', 'Category'])
-
-    # 7. Sort final recommendations by 'Sentiment_Polarity'
-    sorted_recommendations = recommendations.sort_values(by='Sentiment_Polarity', ascending=False).head(n)
-
-    # 8. Format recommendations as a single row table
-    single_row = sorted_recommendations.to_string(index=False, header=True)
-
-    return single_row
-
-# Contoh penggunaan
-app_name_input = input("Masukkan nama aplikasi: ")
-recommendations = hybrid_recommendations(app_name_input, cosine_sim_df, item_similarity_df_train, apk_user_dict, train_data, weight_content=0.5, weight_collab=0.5, n=10)
-print(recommendations)
+print(f"Root Mean Squared Error (Polarity): {rmse_polarity}")
 
