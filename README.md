@@ -93,9 +93,24 @@ Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena
 | Rating                | 2779          |
 | Genres                | 2739          |
 
-- Karena setiap aplikasi seharusnya hanya muncul sekali dalam dataset kita, kita perlu memeriksa dan menghapus entri duplikat berdasarkan kolom App. Ini memastikan bahwa dataset kita tetap bersih dan akurat. Sekarang disimpan pada variable `preparation`.
+- Karena setiap aplikasi seharusnya hanya muncul sekali dalam dataset kita, kita perlu memeriksa dan menghapus entri duplikat berdasarkan kolom App dan yang memiliki nilai kosong. Ini memastikan bahwa dataset kita tetap bersih dan akurat. Sekarang disimpan pada variable `preparation`.
 - Setelah memastikan bahwa dataset kita bersih dari nilai hilang dan duplikat, kita dapat mengonversi kolom tertentu menjadi list. Misalnya, kita bisa mengonversi kolom Genres dan Rating menjadi list untuk memudahkan pemrosesan selanjutnya.
 - Setelah mengonversi data menjadi list, kita dapat membuat dictionary untuk menyimpan pasangan key-value. Dictionary ini bisa digunakan untuk menyimpan informasi penting, seperti mengaitkan setiap aplikasi dengan genre dan Rating-nya.
+- Menggunakan TfidfVectorizer dari pustaka sklearn untuk menghitung nilai TF-IDF untuk kolom Genres, mengubah data teks menjadi representasi numerik. Kemudian proses mapping ini memungkinkan kita untuk dengan mudah mengakses dan mengelola informasi terkait setiap aplikasi.
+````
+  array(['action', 'adventure', 'arcade', 'art', 'auto', 'beauty', 'board',
+       'books', 'brain', 'business', 'casual', 'comics', 'communication',
+       'creativity', 'dating', 'demo', 'design', 'drink', 'editors',
+       'education', 'educational', 'entertainment', 'events', 'finance',
+       'fitness', 'food', 'games', 'health', 'home', 'house', 'libraries',
+       'lifestyle', 'local', 'magazines', 'maps', 'medical', 'music',
+       'navigation', 'news', 'parenting', 'personalization',
+       'photography', 'play', 'players', 'playing', 'pretend',
+       'productivity', 'puzzle', 'racing', 'reference', 'role',
+       'shopping', 'simulation', 'social', 'sports', 'strategy', 'tools',
+       'travel', 'vehicles', 'video', 'weather'], dtype=object)
+````
+
 
 ### 2. Collaborative Filtering
 - Dataset yang dipakai adalah `googleplaystore_user_reviews.csv`, kemudian memeriksa apakah ada nilai hilang dalam dataset tersebut.  Nilai hilang dapat memengaruhi hasil analisis kita, jadi kita perlu menanganinya dengan tepat. Sekarang disimpan pada variable `user_clean`
@@ -114,51 +129,42 @@ Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena
 Berdasarkan pernyataaan solusi sebelumnya, proses pemodelan dibagi menjadi dua metode pendekatan, yaitu metode content-based filtering dan metode collaborative filtering. Berikut adalah penjelasan dan tahapan dalam proses pemodelan dari masing-masing metode pendekatan.
 ### 1. Content-Based Filtering
 Proses dimulai dengan TfidfVectorizer dari sklearn yang digunakan untuk mengekstrak fitur dari kolom Genres dengan menghitung Term Frequency-Inverse Document Frequency (TF-IDF), yang mengubah teks menjadi representasi numerik. Proses ini melibatkan fitting model pada data genre untuk menghitung nilai IDF dan kemudian mentransformasikannya menjadi matriks TF-IDF `(Dalam hal ini ukuran matriks 816 X 61)`. Matriks ini menunjukkan bobot setiap kata dalam genre untuk setiap aplikasi dan disimpan dalam sebuah DataFrame untuk analisis lebih lanjut. <br>
-````
-  array(['action', 'adventure', 'arcade', 'art', 'auto', 'beauty', 'board',
-       'books', 'brain', 'business', 'casual', 'comics', 'communication',
-       'creativity', 'dating', 'demo', 'design', 'drink', 'editors',
-       'education', 'educational', 'entertainment', 'events', 'finance',
-       'fitness', 'food', 'games', 'health', 'home', 'house', 'libraries',
-       'lifestyle', 'local', 'magazines', 'maps', 'medical', 'music',
-       'navigation', 'news', 'parenting', 'personalization',
-       'photography', 'play', 'players', 'playing', 'pretend',
-       'productivity', 'puzzle', 'racing', 'reference', 'role',
-       'shopping', 'simulation', 'social', 'sports', 'strategy', 'tools',
-       'travel', 'vehicles', 'video', 'weather'], dtype=object)
-````
-Setelah itu, cosine similarity dihitung untuk mengukur seberapa mirip dua aplikasi berdasarkan vektor TF-IDF mereka, dengan nilai berkisar antara 0 (tidak mirip) hingga 1 (sangat mirip). Matriks cosine similarity disusun dalam DataFrame, memudahkan visualisasi aplikasi yang mirip satu sama lain. Fungsi `apk_recommendations_based` kemudian diimplementasikan untuk memberikan rekomendasi berdasarkan nama aplikasi yang dimasukkan pengguna, mencari aplikasi mirip melalui nilai cosine similarity, dan menghapus aplikasi yang sama dari daftar rekomendasi. Rekomendasi ini diurutkan berdasarkan rating, dan sejumlah aplikasi ditampilkan sesuai parameter yang ditentukan `(n=10)`.<br>
+Setelah itu, cosine similarity dihitung untuk mengukur seberapa mirip dua aplikasi berdasarkan vektor TF-IDF mereka, dengan nilai berkisar antara 0 (tidak mirip) hingga 1 (sangat mirip). Matriks cosine similarity disusun dalam DataFrame, memudahkan visualisasi aplikasi yang mirip satu sama lain. Fungsi `apk_recommendations_based` kemudian diimplementasikan untuk memberikan rekomendasi berdasarkan nama aplikasi yang dimasukkan pengguna, mencari aplikasi mirip melalui nilai cosine similarity, dan menghapus aplikasi yang sama dari daftar rekomendasi. Rekomendasi ini diurutkan berdasarkan rating, dan sejumlah aplikasi ditampilkan sesuai parameter top n yang ditentukan `(n=10)`.<br>
 Hasil dari proses ini pengguna memasukkan nama aplikasi dan menerima rekomendasi aplikasi lainnya yang memiliki kesamaan genre dan rating yang tinggi, dapat dilihat seperti dibawah ini: 
   ````
-Rekomendasi untuk APK '1800 Contacts - Lens Store':
-                                      App  Genres  Rating  Sentiment_Polarity  Sentiment_Subjectivity Sentiment
-                  Ada - Your Health Guide Medical     4.7            0.377083                0.683333  Positive
-           BELONG Beating Cancer Together Medical     4.7            1.000000                0.750000  Positive
-           Baritastic - Bariatric Tracker Medical     4.7            0.541667                0.916667  Positive
-                     All Mental disorders Medical     4.5           -0.277588                0.766667  Negative
-              Anatomy Learning - 3D Atlas Medical     4.5            0.362500                0.500000  Positive
-Airway Ex - Intubate. Anesthetize. Train. Medical     4.3            0.150000                0.875000  Positive
-              Banfield Pet Health Tracker Medical     4.2            0.061905                0.528571  Positive
-                  BioLife Plasma Services Medical     3.5           -0.060000                0.490000  Negative
-                          Anthem Anywhere Medical     2.7           -0.275000                0.483333  Negative
-                       Anthem BC Anywhere Medical     2.6            0.158333                0.295833  Positive
+Rekomendasi untuk APK 'GoBank':
+| App                            | Genres   |   Rating |   Sentiment_Polarity |   Sentiment_Subjectivity | Sentiment   |
+|--------------------------------|----------|----------|----------------------|--------------------------|-------------|
+| Associated Credit Union Mobile | Finance  |      4.7 |           -0.0555556 |                 0.244444 | Negative    |
+| BZWBK24 mobile                 | Finance  |      4.5 |           -0.0443452 |                 0.480357 | Negative    |
+| Bank of America Mobile Banking | Finance  |      4.4 |           -0.0717172 |                 0.253535 | Negative    |
+| Acorns - Invest Spare Change   | Finance  |      4.3 |            0.283333  |                 0.469444 | Positive    |
+| Amex Mobile                    | Finance  |      4.3 |            0.275     |                 0.55     | Positive    |
+| BBVA Compass Banking           | Finance  |      4.3 |            1         |                 0.3      | Positive    |
+| BankMobile Vibe App            | Finance  |      4.3 |            0.110606  |                 0.684242 | Positive    |
+| BBVA Spain                     | Finance  |      4.2 |            0.333333  |                 0.6      | Positive    |
+| ACE Elite                      | Finance  |      4.1 |            0         |                 0        | Neutral     |
+| Banorte Movil                  | Finance  |      4.1 |            0.328571  |                 0.535119 | Positive    |
 
   ````
 ### 2. Collaborative Filtering
-Dataset yang sudah dibagi menjadi dua bagian: train set dan test set pada data preparation kemudian dibuat pivot table yang menyusun data menjadi matriks di mana baris mewakili aplikasi dan kolom mewakili nilai sentimen, memungkinkan perhitungan rata-rata nilai sentimen untuk setiap aplikasi. Model K-Nearest Neighbors (KNN) digunakan untuk menemukan aplikasi yang mirip berdasarkan nilai sentimen, dengan metrik cosine untuk mengukur kemiripan antara aplikasi. Sebuah fungsi `find_similar_items_knn` diciptakan untuk mencari aplikasi mirip, menerima nama aplikasi sebagai input, menemukan indeks aplikasi dalam matriks, dan menggunakan model KNN untuk mencari aplikasi terdekat. Pengguna diminta untuk memasukkan nama aplikasi yang diinginkan, dan rata-rata polaritas serta subjektivitas dari aplikasi tersebut dihitung dan ditampilkan.<br>
-Hasil dari proses ini pengguna memasukkan nama aplikasi,  Untuk setiap aplikasi yang direkomendasikan, rata-rata polaritas dan subjektivitas dihitung dan disimpan dalam sebuah list. Data rekomendasi kemudian diurutkan berdasarkan nilai Sentiment Polarity dari tertinggi ke terendah, dapat dilihat seperti dibawah ini: <br>
+Dataset yang sudah dibagi menjadi dua bagian: train set dan test set pada data preparation kemudian langkah selanjutnya adalah menerapkan algoritma KNN untuk menemukan aplikasi yang mirip.<br>
+Setelah model KNN dilatih, kita dapat menggunakan model tersebut untuk mencari aplikasi yang mirip berdasarkan input App, kemudian memberikan rekomendasi aplikasi yang mirip berdasarkan model K-Nearest Neighbors dengan jumlah yang direkomendasikan sebagai top n yaitu 5. Data rekomendasi ini diurutkan berdasarkan nilai Sentiment Polarity dari tertinggi ke terendah, dapat dilihat seperti dibawah ini:
 ````
-Sentiment Polarity rata-rata dari aplikasi '1800 Contacts - Lens Store': 0.3284
-Sentiment Subjectivity rata-rata dari aplikasi '1800 Contacts - Lens Store': 0.5792
+Sentiment Polarity rata-rata dari aplikasi 'Blogger': 0.1187
+Sentiment Subjectivity rata-rata dari aplikasi 'Blogger': 0.5304
 
-Rekomendasi aplikasi yang mirip dengan '1800 Contacts - Lens Store':
-                                  Aplikasi  Sentiment Polarity  Sentiment Subjectivity
-       2Date Dating App, Love and matching            0.325684                0.574011
-                            GRE Flashcards            0.319495                0.565242
-30 Day Fitness Challenge - Workout at Home            0.308258                0.543605
-                        Google My Business            0.262570                0.464485
-            Digit Save Money Automatically            0.220794                0.389645
+Rekomendasi aplikasi yang mirip dengan 'Blogger':
+
+| Aplikasi                     | Sentiment Polarity | Sentiment Subjectivity |
+|-------------------------------|-------------------|-----------------------|
+| AMC Theatres                  |            0.1378 |                0.6063 |
+| Banorte Movil                 |            0.1363 |                0.6059 |
+| Chapters: Interactive Stories |            0.1105 |                0.5013 |
+| Cool Reader                   |            0.1091 |                0.4825 |
+| Baby Panda’s Juice Shop       |            0.1083 |                0.4917 |
 ````
+
 
 ## Evaluation
 
@@ -171,6 +177,9 @@ Dihitung dengan membagi true_positives dengan jumlah total aplikasi yang direkom
 Saya menggunakan Root Mean Squared Error (RMSE) untuk mengukur kinerja model pada collaborativve filtering. RMSE adalah metrik yang digunakan untuk menilai seberapa akurat hasil prediksi atau rekomendasi dibandingkan dengan nilai sebenarnya. Nilai RMSE yang lebih kecil menunjukkan bahwa kesalahan dalam prediksi atau rekomendasi model juga lebih kecil. RMSE dihitung dengan cara mengkuadratkan selisih antara nilai prediksi dan nilai aktual, kemudian menjumlahkan semua kesalahan kuadrat tersebut, membaginya dengan jumlah data, dan terakhir mengambil akar dari hasil tersebut agar satuannya sama dengan satuan nilai aslinya.
 ![precision](https://media.geeksforgeeks.org/wp-content/uploads/20200622171741/RMSE1.jpg) <br>
 Dalam program ini, saya menghitung RMSE untuk nilai Sentiment_Polarity dari model prediksi yang dibangun. Hasil perhitungan yang diperoleh adalah: `0.3315518816226507`. Nilai RMSE sebesar 0.3316 menunjukkan bahwa model memiliki kesalahan prediksi rata-rata yang cukup kecil dalam memprediksi polaritas sentimen. Hal ini menandakan bahwa model tersebut cukup akurat dalam merekomendasikan aplikasi berdasarkan sentimen yang dianalisis.
+
+## Kesimpulan 
+Model content-based filtering dan collaborative filtering yang telah dibangun telah berhasil menjawab permasalahan yang diajukan dan mencapai tujuan yang ditetapkan. Kedua model ini memberikan kontribusi signifikan dalam meningkatkan kualitas rekomendasi aplikasi di Play Store. Namun, masih terdapat ruang untuk pengembangan lebih lanjut seperti gabungan dari 2 model (Hibryd Filtering) agar model rekomendasi dapat memberikan hasil yang lebih baik dan lebih relevan dengan kebutuhan pengguna.
 
 ## Referensi
 [1] Bhineka, "AI turut berpartisipasi pada rekomendasi di Play Store", Retrieved from: https://www.bhinneka.com/blog/ai-turut-berpartisipasi-pada-rekomendasi-di-play-store/
