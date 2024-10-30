@@ -51,13 +51,34 @@ Pada berkas `googleplaystore.csv` memuat data-data aplikasi yang terdiri dari 10
 - Current Ver : 	Current version of the app available on Play Store (as when scraped)
 - Android Ver : 	Min required Android version (as when scraped)
 
-Pada berkas `googleplaystore_user_reviews.csv` memuat data-data buku yang terdiri dari 64.295   baris dan memiliki 5  kolom, diantaranya adalah :
+Pada berkas `googleplaystore_user_reviews.csv` memuat data-data Aplikasi yang terdiri dari 64.295   baris dan memiliki 5  kolom, diantaranya adalah :
 - App : 	Name of app
 - Translated Reviews : 	User review (Preprocessed and translated to English)
 - Sentiment : Positive/Negative/Neutral (Preprocessed)
 - Sentiment_polarity :	Sentiment polarity score
 - Sentiment_subjectivity :	Sentiment subjectivity score
 
+Adapun kondisi data seperti missing value :
+1. `googleplaystore.csv`
+
+| Kolom     | Missing Values |
+|-----------|----------------|
+| App       | 0              |
+| Category  | 0              |
+| Rating    | 1474           |
+| Genres    | 0              |
+
+2. `googleplaystore_user_reviews.csv`
+
+| Kolom                 | Missing Values |
+|-----------------------|----------------|
+| App                   | 0              |
+| Translated_Review     | 26,868         |
+| Sentiment             | 26,863         |
+| Sentiment_Polarity    | 26,863         |
+| Sentiment_Subjectivity| 26,863         |
+
+ 
 Berikut ini adalah hasil dari visualiasi `googleplaystore.csv`.
 1. Rating
    ![Rating](https://github.com/Adityas22/sistem_rekomendasi_play_store/raw/main/image/Rating.png)
@@ -80,19 +101,6 @@ Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena
 ### 1. Content-Based Filtering
 - Untuk menyederhanakan analisis, kita akan menghapus beberapa kolom dari dataset `googleplaystore.csv` yang tidak diperlukan untuk model content-based filtering. Kolom yang akan dihapus adalah:'Reviews', 'Size', 'Price', 'Type', 'Installs', 'Content_Rating', 'Last_Updated', 'Current_Ver', 'Android_Ver'. Sekarang kita fokus pada kolom-kolom :'App', 'Category', 'Rating', 'Genres'.
 - Menggabungkan`googleplaystore.csv` dengan dataset `googleplaystore_user_reviews.csv`. Penggabungan ini akan memberikan pandangan yang lebih komprehensif tentang aplikasi, dataset yang digabungkan akan disimpan dalam variabel baru bernama all_apk_user yang berisikan 125401 rows × 8 columns.
-- Memeriksa apakah ada nilai hilang dalam dataset all_apk_user. Nilai hilang dapat memengaruhi hasil analisis kita, jadi kita perlu menanganinya dengan tepat. Sekarang disimpan pada variable `all_apk_user_cleaned`
-
-| Kolom                  | Missing Value |
-|-----------------------|---------------|
-| App                   | 0             |
-| Translated_Review     | 51298         |
-| Sentiment             | 51288         |
-| Sentiment_Polarity    | 51288         |
-| Sentiment_Subjectivity | 51288         |
-| Category              | 2739          |
-| Rating                | 2779          |
-| Genres                | 2739          |
-
 - Karena setiap aplikasi seharusnya hanya muncul sekali dalam dataset kita, kita perlu memeriksa dan menghapus entri duplikat berdasarkan kolom App dan yang memiliki nilai kosong. Ini memastikan bahwa dataset kita tetap bersih dan akurat. Sekarang disimpan pada variable `preparation`.
 - Setelah memastikan bahwa dataset kita bersih dari nilai hilang dan duplikat, kita dapat mengonversi kolom tertentu menjadi list. Misalnya, kita bisa mengonversi kolom Genres dan Rating menjadi list untuk memudahkan pemrosesan selanjutnya.
 - Setelah mengonversi data menjadi list, kita dapat membuat dictionary untuk menyimpan pasangan key-value. Dictionary ini bisa digunakan untuk menyimpan informasi penting, seperti mengaitkan setiap aplikasi dengan genre dan Rating-nya.
@@ -113,17 +121,8 @@ Proses persiapan data pada masing-masing metode dilakukan secara terpisah karena
 
 
 ### 2. Collaborative Filtering
-- Dataset yang dipakai adalah `googleplaystore_user_reviews.csv`, kemudian memeriksa apakah ada nilai hilang dalam dataset tersebut.  Nilai hilang dapat memengaruhi hasil analisis kita, jadi kita perlu menanganinya dengan tepat. Sekarang disimpan pada variable `user_clean`
-  
-| Kolom                  | Missing Value |
-|-----------------------|---------------|
-| App                   | 0             |
-| Translated_Review     | 26868         |
-| Sentiment             | 26863         |
-| Sentiment_Polarity    | 26863         |
-| Sentiment_Subjectivity | 26863         |
-
-- Setelah membersihkan dataset dari nilai hilang, langkah selanjutnya adalah membagi dataset `user_clean` menjadi dua subset: 80% untuk pelatihan (training) dan 20% untuk pengujian (testing). Pembagian ini penting untuk memastikan bahwa model yang kita latih tidak terpapar pada data yang sama ketika kita mengujinya.
+- Dataset yang dipakai adalah `googleplaystore_user_reviews.csv`, kemudian membersihkan dataset dari nilai hilang.
+- Langkah selanjutnya adalah membagi dataset `user_clean` menjadi dua subset: 80% untuk pelatihan (training) dan 20% untuk pengujian (testing). Pembagian ini penting untuk memastikan bahwa model yang kita latih tidak terpapar pada data yang sama ketika kita mengujinya.
 
 ## Modeling and Result
 Berdasarkan pernyataaan solusi sebelumnya, proses pemodelan dibagi menjadi dua metode pendekatan, yaitu metode content-based filtering dan metode collaborative filtering. Berikut adalah penjelasan dan tahapan dalam proses pemodelan dari masing-masing metode pendekatan.
@@ -131,7 +130,7 @@ Berdasarkan pernyataaan solusi sebelumnya, proses pemodelan dibagi menjadi dua m
 Proses dimulai dengan TfidfVectorizer dari sklearn yang digunakan untuk mengekstrak fitur dari kolom Genres dengan menghitung Term Frequency-Inverse Document Frequency (TF-IDF), yang mengubah teks menjadi representasi numerik. Proses ini melibatkan fitting model pada data genre untuk menghitung nilai IDF dan kemudian mentransformasikannya menjadi matriks TF-IDF `(Dalam hal ini ukuran matriks 816 X 61)`. Matriks ini menunjukkan bobot setiap kata dalam genre untuk setiap aplikasi dan disimpan dalam sebuah DataFrame untuk analisis lebih lanjut. <br>
 Setelah itu, cosine similarity dihitung untuk mengukur seberapa mirip dua aplikasi berdasarkan vektor TF-IDF mereka, dengan nilai berkisar antara 0 (tidak mirip) hingga 1 (sangat mirip). Matriks cosine similarity disusun dalam DataFrame, memudahkan visualisasi aplikasi yang mirip satu sama lain. Fungsi `apk_recommendations_based` kemudian diimplementasikan untuk memberikan rekomendasi berdasarkan nama aplikasi yang dimasukkan pengguna, mencari aplikasi mirip melalui nilai cosine similarity, dan menghapus aplikasi yang sama dari daftar rekomendasi. Rekomendasi ini diurutkan berdasarkan rating, dan sejumlah aplikasi ditampilkan sesuai parameter top n yang ditentukan `(n=10)`.<br>
 Hasil dari proses ini pengguna memasukkan nama aplikasi dan menerima rekomendasi aplikasi lainnya yang memiliki kesamaan genre dan rating yang tinggi, dapat dilihat seperti dibawah ini: 
-  ````
+
 Rekomendasi untuk APK 'GoBank':
 | App                            | Genres   |   Rating |   Sentiment_Polarity |   Sentiment_Subjectivity | Sentiment   |
 |--------------------------------|----------|----------|----------------------|--------------------------|-------------|
@@ -146,11 +145,10 @@ Rekomendasi untuk APK 'GoBank':
 | ACE Elite                      | Finance  |      4.1 |            0         |                 0        | Neutral     |
 | Banorte Movil                  | Finance  |      4.1 |            0.328571  |                 0.535119 | Positive    |
 
-  ````
 ### 2. Collaborative Filtering
 Dataset yang sudah dibagi menjadi dua bagian: train set dan test set pada data preparation kemudian langkah selanjutnya adalah menerapkan algoritma KNN untuk menemukan aplikasi yang mirip.<br>
-Setelah model KNN dilatih, kita dapat menggunakan model tersebut untuk mencari aplikasi yang mirip berdasarkan input App, kemudian memberikan rekomendasi aplikasi yang mirip berdasarkan model K-Nearest Neighbors dengan jumlah yang direkomendasikan sebagai top n yaitu 5. Data rekomendasi ini diurutkan berdasarkan nilai Sentiment Polarity dari tertinggi ke terendah, dapat dilihat seperti dibawah ini:
-````
+Model KNN dilatih dengan metrik cosine similarity dan algoritma brute, yang mengukur jarak antar aplikasi berdasarkan sudut vektor. Fungsi `find_similar_items_knn` memungkinkan pengguna memasukkan nama aplikasi untuk mencari aplikasi serupa. Proses ini meliputi validasi aplikasi, perhitungan jarak untuk menemukan lima aplikasi terdekat, serta penghitungan rata-rata Sentiment Polarity dan Sentiment Subjectivity untuk setiap aplikasi mirip. Hasil rekomendasi disusun dalam tabel, diurutkan berdasarkan Sentiment Polarity, sehingga pengguna dapat dengan mudah menemukan aplikasi yang relevan. Jumlah yang direkomendasikan sebagai top n yaitu 5, dapat dilihat seperti dibawah ini:
+
 Sentiment Polarity rata-rata dari aplikasi 'Blogger': 0.1187
 Sentiment Subjectivity rata-rata dari aplikasi 'Blogger': 0.5304
 
@@ -163,7 +161,7 @@ Rekomendasi aplikasi yang mirip dengan 'Blogger':
 | Chapters: Interactive Stories |            0.1105 |                0.5013 |
 | Cool Reader                   |            0.1091 |                0.4825 |
 | Baby Panda’s Juice Shop       |            0.1083 |                0.4917 |
-````
+
 
 
 ## Evaluation
